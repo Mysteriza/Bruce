@@ -1,21 +1,22 @@
+#ifndef WEB_INTERFACE_H
+#define WEB_INTERFACE_H
 
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPmDNS.h>
+#include <FS.h>
 #include <SD.h>
 #include <SPI.h>
 #include <WiFi.h>
-#include <typeinfo>
 
-extern AsyncWebServer *server; // used to check if the webserver is running
+extern AsyncWebServer *server;
 
-// function defaults
 String humanReadableSize(uint64_t bytes);
-String listFiles(FS fs, String folder);
-String readLineFromFile(File myFile);
+String listFiles(FS &fs, const String &folder);
 
 void loopOptionsWebUi();
-
 void configureWebServer();
 void startWebUi(bool mode_ap = false);
 void stopWebUi();
+
+#endif

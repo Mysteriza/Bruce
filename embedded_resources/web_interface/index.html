@@ -1,65 +1,223 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="index.css" />
+    <link rel="icon" href="data:," />
+    <title>BRUCE Firmware Interface</title>
+  </head>
 
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="index.css">
-  <link rel="icon" href="data:,">
-</head>
+  <body>
+    <div class="container">
+      <div class="header-actions">
+        <h1 class="title-glow">
+          BRUCE Fw_v<span id="firmwareVersion">...</span>
+        </h1>
+        <button class="logout-btn" onclick="logoutButton()" title="Logout">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path
+              fill="currentColor"
+              d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012 2v2h-2V4H5v16h9v-2h2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V4a2 2 0 012-2h9z"
+            />
+          </svg>
+        </button>
+      </div>
 
-<body>
-  <div class="container">
-    <div class="float-element"><a onclick="logoutButton()" href='javascript:void(0);'>[X]</a></div>
-    <h1 align="center">BRUCE Fw (<span id="firmwareVersion">...</span>)</h1>
-    <p>Firmware for offensive pranks and pentest studies and analysis. For educational purposes only. Don't use in
-      environments where you are not allowed. All responsibilities for irresponsible usage of this firmware rest on your
-      fin, sharky. Sincerely, Bruce.</p>
-    <p>SD Free Storage: <span id="freeSD">...</span> | Used: <span id="usedSD">...</span> | Total: <span
-        id="totalSD">...</span></p>
-    <p>LittleFS Free Storage: <span id="freeLittleFS">...</span> | Used: <span id="usedLittleFS">...</span> | Total:
-      <span id="totalLittleFS">...</span>
-    </p>
-    <div>
-      <form id="save" enctype="multipart/form-data" method="post">
-        <input type="hidden" id="actualFolder" name="actualFolder" value="/">
-        <input type="hidden" id="actualFS" name="actualFS" value="LittleFS">
-      </form>
-      <button onclick="rebootButton()">Reboot</button>
-      <button onclick="WifiConfig()">Usr/Pass</button>
-      <button onclick="serialCmd()">SerialCmd</button>
-      <button onclick="listFilesButton('/', 'SD', true)">SD Files</button>
-      <button onclick="listFilesButton('/', 'LittleFS', true)">LittleFS</button>
+      <div class="info-box">
+        <p>
+          Firmware for offensive pranks and pentest studies and analysis. For
+          educational purposes only. Don't use in environments where you are not
+          allowed. All responsibilities for irresponsible usage of this firmware
+          rest on your fin, sharky. Sincerely, Bruce.
+        </p>
+      </div>
 
+      <div class="storage-info">
+        <div class="storage-card sd-card">
+          <h5 class="storage-title">SD Card Storage</h5>
+          <div class="storage-details">
+            <p>
+              <span class="label">Free:</span>
+              <span id="freeSD" class="value">...</span>
+            </p>
+            <p>
+              <span class="label">Used:</span>
+              <span id="usedSD" class="value">...</span>
+            </p>
+            <p>
+              <span class="label">Total:</span>
+              <span id="totalSD" class="value">...</span>
+            </p>
+          </div>
+          <div class="storage-visual">
+            <div class="progress-bar-container">
+              <div
+                class="progress-bar"
+                id="sdProgressBar"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="storage-card littlefs-card">
+          <h5 class="storage-title">LittleFS Storage</h5>
+          <div class="storage-details">
+            <p>
+              <span class="label">Free:</span>
+              <span id="freeLittleFS" class="value">...</span>
+            </p>
+            <p>
+              <span class="label">Used:</span>
+              <span id="usedLittleFS" class="value">...</span>
+            </p>
+            <p>
+              <span class="label">Total:</span>
+              <span id="totalLittleFS" class="value">...</span>
+            </p>
+          </div>
+          <div class="storage-visual">
+            <div class="progress-bar-container">
+              <div
+                class="progress-bar"
+                id="littleFsProgressBar"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <form id="save" enctype="multipart/form-data" method="post">
+          <input
+            type="hidden"
+            id="actualFolder"
+            name="actualFolder"
+            value="/"
+          />
+          <input type="hidden" id="actualFS" name="actualFS" value="LittleFS" />
+        </form>
+
+        <div class="button-group command-group">
+          <h4 class="group-label">-- SYSTEM COMMANDS --</h4>
+          <button onclick="rebootButton()" class="action-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                fill="currentColor"
+                d="M12 4c4.41 0 8 3.59 8 8s-3.59 8-8 8-8-3.59-8-8h2c0 3.31 2.69 6 6 6s6-2.69 6-6-2.69-6-6-6V4zm0-2v4l-4-4h4z"
+              />
+            </svg>
+            REBOOT_SYSTEM
+          </button>
+          <button onclick="WifiConfig()" class="action-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                fill="currentColor"
+                d="M12 21l1.45-1.45L11.4 17.5c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4c0 .95-.35 1.82-.92 2.5l2.05 2.05L18 16.55 12 21zm0-9c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+              />
+            </svg>
+            AUTH_MATRIX
+          </button>
+          <button onclick="serialCmd()" class="action-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                fill="currentColor"
+                d="M20 4v12H4V4h16m0-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
+              />
+            </svg>
+            CMD_CONSOLE
+          </button>
+        </div>
+
+        <div class="button-group files-group">
+          <h4 class="group-label">-- STORAGE INTERFACE --</h4>
+          <button
+            onclick="listFilesButton('/', 'SD', true)"
+            class="action-btn fs-btn"
+            id="sdButton"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                fill="currentColor"
+                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"
+              />
+            </svg>
+            SD_CARD_ACCESS
+          </button>
+          <button
+            onclick="listFilesButton('/', 'LittleFS', true)"
+            class="action-btn fs-btn"
+            id="littleFsButton"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                fill="currentColor"
+                d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"
+              />
+            </svg>
+            INTERNAL_FS_ACCESS
+          </button>
+        </div>
+      </div>
+
+      <div id="file-manager-section">
+        <div id="breadcrumb-area">
+          <span id="fs-type-indicator"></span><span id="breadcrumbs">/</span>
+        </div>
+
+        <div id="drop-area" class="drop-area"><div id="details"></div></div>
+      </div>
+
+      <div id="upload-actions-container">
+        <div id="updetailsheader-container">
+          <p id="updetailsheader"></p>
+        </div>
+        <div id="updetails-container">
+          <p id="updetails"></p>
+        </div>
+      </div>
+
+      <p id="status"></p>
+
+      <div class="editor-container" style="display: none">
+        <div class="editor-header">
+          <button onclick="cancelEdit()" class="back-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                fill="currentColor"
+                d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+              />
+            </svg>
+            Back
+          </button>
+          <h2 class="editor-title-glow">WebUI_Editor</h2>
+        </div>
+        <div class="editor-file">File: <span id="editor-file"></span></div>
+        <textarea id="editor" spellcheck="false"></textarea>
+        <div class="editor-actions">
+          <button onclick="saveFile()" class="save-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                fill="currentColor"
+                d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+              />
+            </svg>
+            Save
+          </button>
+          <button onclick="cancelEdit()" class="cancel-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                fill="currentColor"
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"
+              />
+            </svg>
+            Cancel
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div id="drop-area" class="drop-area">
-      <p id="detailsheader"></p>
-      <p id="details"></p>
-    </div>
-    <p id="updetailsheader"></p>
-    <p id="updetails"></p>
-    <p id="status"></p>
-
-    <div class="editor-container">
-      <div>
-        <button onclick="cancelEdit()"><strong>⬅</strong> Back</button>
-        <h2>WebUi Editor</h2>
-        <span></span>
-      </div>
-      <div>
-        file: <span id="editor-file"></span>
-      </div>
-      <textarea id="editor" spellcheck="false"></textarea>
-      <div>
-        <button onclick="saveFile()">✔️​ Save</button>
-        <button onclick="cancelEdit()">❌​ Cancel</button>
-      </div>
-    </div>
-
-  </div>
-
-  <script src="index.js"></script>
-</body>
-
+    <script src="index.js"></script>
+  </body>
 </html>
